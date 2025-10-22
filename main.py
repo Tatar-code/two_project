@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import simpledialog
 import request as rq
 
 
@@ -9,6 +10,7 @@ class ToDoApp:
         self.front_screen()
         self.create_green_button()
         self.create_red_button()
+        self.create_add_task_button()
         self.tasks = []
         self.x = 350
         self.y = 150
@@ -17,6 +19,7 @@ class ToDoApp:
         self.screen.title('ToDoApp')
         self.screen.geometry('1000x800')
     
+
     def front_screen(self):
         green_widget = tk.Label(self.screen,
                               text='In processing',
@@ -39,7 +42,7 @@ class ToDoApp:
 
 
     def create_green_button(self):
-        row = 1
+        row = 8
         for task in rq.all_active_tasks():
             button = tk.Button(self.screen,
                             text=task.name,
@@ -50,7 +53,8 @@ class ToDoApp:
                             command=lambda t=task: rq.find_text(t.id)
                             )
             button.grid(row=row,column=0,sticky='w',padx=100)
-            row += 1
+            if row > 0:
+                row -=1
 
     def create_red_button(self):
         row = 1
@@ -66,8 +70,25 @@ class ToDoApp:
             button.grid(row=row,column=1,sticky='e',padx=350)
             row += 1
 
+    def create_add_task_button(self):
+            button = tk.Button(self.screen,
+                           text='+',
+                           fg='green',
+                           font=('Arial',20),
+                           width=10,
+                           command=self.enter_data
+                           )
+            button.grid(sticky='n')
 
     
+    def enter_data(self):
+        name = simpledialog.askstring('NAME','Enter name for the task...')
+        text = simpledialog.askstring('VALUE','Enter value for the task...')
+        if name and text is not None:
+            rq.add_task(name=name,text=text)
+            self.create_green_button()
+
+
 
 if __name__ == '__main__':
     app = ToDoApp()
